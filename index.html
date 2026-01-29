@@ -24,7 +24,7 @@
 </head>
 <body>
     <div id="score">0</div>
-    <button id="click_btn">ЖМИ!</button>
+    <button id="click_btn">КЛИК!</button>
 
     <script>
         let tg = window.Telegram.WebApp;
@@ -34,7 +34,11 @@
         const scoreDisplay = document.getElementById('score');
         const btn = document.getElementById('click_btn');
 
-        // Настраиваем синюю кнопку внизу
+        // Проверка: нашелся ли элемент в HTML?
+        if (!btn) {
+            alert("Ошибка: Кнопка с id='click_btn' не найдена!");
+        }
+
         tg.MainButton.setParams({
             text: "ЗАБРАТЬ ОЧКИ",
             color: "#2ecc71"
@@ -42,15 +46,15 @@
 
         btn.addEventListener('click', () => {
             count++;
-            scoreDisplay.innerText = count;
+            scoreDisplay.innerText = count; // Обновляем цифру на экране
+            
             tg.HapticFeedback.impactOccurred('medium'); // Вибрация
 
-            if (count >= 5) { // Показываем кнопку сохранения после 5 кликов
+            if (count >= 5) { 
                 tg.MainButton.show();
             }
         });
 
-        // Отправка результата в Python
         tg.MainButton.onClick(() => {
             tg.sendData(count.toString());
         });
