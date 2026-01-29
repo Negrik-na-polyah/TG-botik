@@ -8,41 +8,72 @@
         body {
             font-family: sans-serif;
             text-align: center;
-            background-color: var(--tg-theme-bg-color); /* Берет цвет из темы ТГ */
-            color: var(--tg-theme-text-color);
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
             margin-top: 50px;
         }
+        
+        /* Стили для поля ввода */
+        input {
+            display: block;
+            width: 70%;
+            margin: 10px auto;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
         button {
-            padding: 10px 20px;
-            font-size: 18px;
-            background-color: var(--tg-theme-button-color);
-            color: var(--tg-theme-button-text-color);
+            display: block;
+            width: 80%;
+            margin: 20px auto;
+            padding: 15px;
             border: none;
-            border-radius: 5px;
+            border-radius: 12px;
+            background-color: var(--tg-theme-button-color, #248bed);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        button:active {
+            transform: scale(0.98);
+            filter: brightness(0.9);
         }
     </style>
 </head>
 <body>
     <h1>Привет, это мое приложение!</h1>
-    <button id="main_btn">Отправить данные боту</button>
+    
+    <input type="text" id="user_data" placeholder="Напиши что-нибудь...">
+    
+    <button id="main_btn">Отправить текст боту</button>
 
     <script>
         let tg = window.Telegram.WebApp; 
         tg.expand();
 
-        // --- ДОБАВЛЯЕМ ГЛАВНУЮ КНОПКУ ТУТ ---
-        tg.MainButton.text = "Подтвердить покупку"; // Текст на кнопке
-        tg.MainButton.show(); // Показать кнопку
+        tg.MainButton.text = "Подтвердить покупку";
+        tg.MainButton.show();
 
-        // Обработка нажатия на главную кнопку
         tg.MainButton.onClick(function() {
             tg.sendData("Главная кнопка была нажата!");
         });
-        // ------------------------------------
 
         let btn = document.getElementById("main_btn");
+        
+        // ОБНОВЛЕННАЯ ЛОГИКА: теперь берем данные из поля ввода
         btn.addEventListener("click", function(){
-            tg.sendData("Обычная кнопка нажата!"); 
+            let textValue = document.getElementById("user_data").value;
+            
+            if (textValue.length < 1) {
+                tg.showAlert("Поле не может быть пустым!");
+            } else {
+                tg.sendData("Пользователь ввел: " + textValue); 
+            }
         });
     </script>
 </body>
