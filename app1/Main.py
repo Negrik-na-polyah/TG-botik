@@ -5,7 +5,7 @@ TOKEN = '8587792984:AAG0k70U93Pl-W72pleShz8QMt6T4gnFnPU'
 bot = telebot.TeleBot(TOKEN)
 
 # Не забывай менять ?v=... чтобы обновлялось!
-APP_URL = "https://negrik-na-polyah.github.io/TG-botik/?v=test999"
+APP_URL = "https://negrik-na-polyah.github.io/TG-botik/?v=test001"
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -18,8 +18,8 @@ def start(message):
 
 @bot.message_handler(content_types=['web_app_data'])
 def handle_data(message):
-    # Получаем наше число кликов
     score = message.web_app_data.data
-    bot.send_message(message.chat.id, f"🏆 Твой результат сохранен! Ты накликал: {score}")
+    bot.send_message(message.chat.id, f"🎮 Игра окончена! Твой счет: {score}")
+    bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEL_...") # Можно добавить ID стикера для красоты
 
 bot.infinity_polling()

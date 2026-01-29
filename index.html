@@ -2,7 +2,6 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Clicker Game</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
@@ -10,58 +9,51 @@
             text-align: center;
             background-color: var(--tg-theme-bg-color, #ffffff);
             color: var(--tg-theme-text-color, #000000);
-            user-select: none; /* Чтобы текст не выделялся при кликах */
+            user-select: none;
         }
-        #score {
-            font-size: 48px;
-            margin-top: 50px;
-        }
+        #score { font-size: 60px; font-weight: bold; margin-top: 40px; }
         #click_btn {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            border: none;
-            background-color: #e67e22;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            margin-top: 30px;
-            box-shadow: 0 10px #d35400;
+            width: 220px; height: 220px; border-radius: 50%; border: none;
+            background: linear-gradient(145deg, #f1c40f, #f39c12);
+            color: white; font-size: 30px; font-weight: bold;
+            cursor: pointer; margin-top: 40px;
+            box-shadow: 0 10px #d35400; transition: 0.1s;
         }
-        #click_btn:active {
-            box-shadow: 0 5px #d35400;
-            transform: translateY(5px);
-        }
+        #click_btn:active { box-shadow: 0 4px #d35400; transform: translateY(6px); }
     </style>
 </head>
 <body>
     <div id="score">0</div>
-    <button id="click_btn">КЛИК!</button>
+    <button id="click_btn">ЖМИ!</button>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        let score = 0;
-        const scoreElement = document.getElementById('score');
+        let count = 0;
+        const scoreDisplay = document.getElementById('score');
         const btn = document.getElementById('click_btn');
 
-        // Настраиваем главную кнопку ТГ (она будет кнопкой "Сохранить")
-        tg.MainButton.text = "СОХРАНИТЬ РЕЗУЛЬТАТ";
-        tg.MainButton.hide(); 
+        // Настраиваем синюю кнопку внизу
+        tg.MainButton.setParams({
+            text: "ЗАБРАТЬ ОЧКИ",
+            color: "#2ecc71"
+        });
 
         btn.addEventListener('click', () => {
-            score++;
-            scoreElement.innerText = score;
-            
-            // Вибрация при клике (если телефон поддерживает)
-            tg.HapticFeedback.impactOccurred('light');
+            count++;
+            scoreDisplay.innerText = count;
+            tg.HapticFeedback.impactOccurred('medium'); // Вибрация
 
-            // Показываем кнопку сохранения, когда набрали хотя бы 10 очков
-            if (score >= 10) {
+            if (count >= 5) { // Показываем кнопку сохранения после 5 кликов
                 tg.MainButton.show();
             }
         });
 
-        // Отправка результата боту
-        tg.Main
+        // Отправка результата в Python
+        tg.MainButton.onClick(() => {
+            tg.sendData(count.toString());
+        });
+    </script>
+</body>
+</html>
