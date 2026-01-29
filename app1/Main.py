@@ -4,7 +4,7 @@ from telebot import types
 TOKEN = '8587792984:AAG0k70U93Pl-W72pleShz8QMt6T4gnFnPU'
 bot = telebot.TeleBot(TOKEN)
 
-APP_URL = "https://negrik-na-polyah.github.io/TG-botik/"
+APP_URL = "https://negrik-na-polyah.github.io/TG-botik/?v=6"
 
 @bot.message_handler(commands=['start'])
 def start(message):

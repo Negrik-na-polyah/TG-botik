@@ -64,7 +64,9 @@
         let btn = document.getElementById("main_btn");
         
         btn.addEventListener("click", function(){
-            let val = document.getElementById("user_input").value;
+
+            let val = document.getElementById("user_data").value; 
+            
             if (val.length < 1) {
                 tg.showAlert("Поле пустое!");
             } else {
