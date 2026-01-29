@@ -16,9 +16,10 @@ def start(message):
     markup.add(btn)
     
     bot.send_message(message.chat.id, "Нажми на кнопку ниже, чтобы открыть Mini App:", reply_markup=markup)
-
+    
 @bot.message_handler(content_types=['web_app_data'])
 def handle_app_data(message):
-    bot.send_message(message.chat.id, f"Приложение прислало: {message.web_app_data.data}")
+    print(f"Получены данные: {message.web_app_data.data}") # Это появится в терминале VS Code
+    bot.send_message(message.chat.id, f"Ура! Бот получил: {message.web_app_data.data}")
 
 bot.infinity_polling()

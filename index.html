@@ -51,28 +51,34 @@
     <button id="main_btn">Отправить текст боту</button>
 
     <script>
-        let tg = window.Telegram.WebApp; 
-        tg.expand();
+    let tg = window.Telegram.WebApp; 
+    tg.expand();
 
-        tg.MainButton.text = "Подтвердить покупку";
-        tg.MainButton.show();
+    // Настраиваем главную кнопку
+    tg.MainButton.text = "ОТПРАВИТЬ ЧЕРЕЗ MAIN";
+    tg.MainButton.show();
 
-        tg.MainButton.onClick(function() {
-            tg.sendData("Главная кнопка была нажата!");
-        });
+    // Слушаем нажатие на ГЛАВНУЮ кнопку (синяя внизу)
+    tg.MainButton.onClick(function() {
+        let val = document.getElementById("user_data").value;
+        tg.sendData(val); 
+    });
 
-        let btn = document.getElementById("main_btn");
+    let btn = document.getElementById("main_btn");
+    
+    // Слушаем нажатие на кнопку ВНУТРИ сайта
+    btn.addEventListener("click", function(){
+        let val = document.getElementById("user_data").value; 
         
-        btn.addEventListener("click", function(){
-
-            let val = document.getElementById("user_data").value; 
-            
-            if (val.length < 1) {
-                tg.showAlert("Поле пустое!");
-            } else {
-                tg.sendData(val); 
-            }
-        });
-    </script>
+        if (val.length < 1) {
+            tg.showAlert("Поле пустое!");
+        } else {
+            // Попробуй отправить данные
+            tg.sendData(val); 
+            // И на всякий случай выведи в алерт, чтобы видеть, что код сработал
+            tg.showAlert("Данные отправлены: " + val);
+        }
+    });
+</script>
 </body>
 </html>
