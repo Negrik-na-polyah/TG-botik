@@ -13,16 +13,14 @@
             margin-top: 50px;
         }
         
-        /* Стили для поля ввода */
         input {
             display: block;
-            width: 70%;
+            width: 80%;
             margin: 10px auto;
-            padding: 12px;
+            padding: 10px;
             border-radius: 8px;
             border: 1px solid #ccc;
-            font-size: 16px;
-        }
+        }  
 
         button {
             display: block;
@@ -65,14 +63,12 @@
 
         let btn = document.getElementById("main_btn");
         
-        // ОБНОВЛЕННАЯ ЛОГИКА: теперь берем данные из поля ввода
         btn.addEventListener("click", function(){
-            let textValue = document.getElementById("user_data").value;
-            
-            if (textValue.length < 1) {
-                tg.showAlert("Поле не может быть пустым!");
+            let val = document.getElementById("user_input").value;
+            if (val.length < 1) {
+                tg.showAlert("Поле пустое!");
             } else {
-                tg.sendData("Пользователь ввел: " + textValue); 
+                tg.sendData(val); 
             }
         });
     </script>
