@@ -1,17 +1,15 @@
 import telebot
 from telebot import types
 
-TOKEN = '8587792984:AAG0k7OU93P1-W72pleShz8QMt6T4gnFnPU'
+TOKEN = '8587792984:AAG0k70U93Pl-W72pleShz8QMt6T4gnFnPU'
 bot = telebot.TeleBot(TOKEN)
 
-# Вставь сюда свою ссылку из GitHub Pages
-APP_URL = "https://negrik-na-polyah.github.io/tg-app-1/"
+APP_URL = "https://negrik-na-polyah.github.io/TG-botik/"
 
 @bot.message_handler(commands=['start'])
 def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     
-    # Важно: URL должен вести на твой index.html на GitHub Pages
     web_app = types.WebAppInfo(url=APP_URL)
     
     btn = types.KeyboardButton(text="Запустить приложение 🚀", web_app=web_app)

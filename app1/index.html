@@ -27,14 +27,22 @@
     <button id="main_btn">Отправить данные боту</button>
 
     <script>
-        let tg = window.Telegram.WebApp; // Инициализация
-        tg.expand(); // Развернуть на все окно
+        let tg = window.Telegram.WebApp; 
+        tg.expand();
+
+        // --- ДОБАВЛЯЕМ ГЛАВНУЮ КНОПКУ ТУТ ---
+        tg.MainButton.text = "Подтвердить покупку"; // Текст на кнопке
+        tg.MainButton.show(); // Показать кнопку
+
+        // Обработка нажатия на главную кнопку
+        tg.MainButton.onClick(function() {
+            tg.sendData("Главная кнопка была нажата!");
+        });
+        // ------------------------------------
 
         let btn = document.getElementById("main_btn");
-
         btn.addEventListener("click", function(){
-            // Мы просто отправляем строку обратно в Python
-            tg.sendData("Кнопка нажата!"); 
+            tg.sendData("Обычная кнопка нажата!"); 
         });
     </script>
 </body>
