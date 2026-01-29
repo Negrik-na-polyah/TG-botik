@@ -5,7 +5,7 @@ TOKEN = '8587792984:AAG0k70U93Pl-W72pleShz8QMt6T4gnFnPU'
 bot = telebot.TeleBot(TOKEN)
 
 # Не забывай менять ?v=... чтобы обновлялось!
-APP_URL = "https://negrik-na-polyah.github.io/TG-botik/?v=clicker1"
+APP_URL = "https://negrik-na-polyah.github.io/TG-botik/?v=test999"
 
 @bot.message_handler(commands=['start'])
 def start(message):
