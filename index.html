@@ -10,16 +10,15 @@
             background-color: var(--tg-theme-bg-color, #ffffff);
             color: var(--tg-theme-text-color, #000000);
             user-select: none;
+            margin-top: 50px;
         }
-        #score { font-size: 60px; font-weight: bold; margin-top: 40px; }
+        #score { font-size: 60px; font-weight: bold; }
         #click_btn {
-            width: 220px; height: 220px; border-radius: 50%; border: none;
-            background: linear-gradient(145deg, #f1c40f, #f39c12);
-            color: white; font-size: 30px; font-weight: bold;
-            cursor: pointer; margin-top: 40px;
-            box-shadow: 0 10px #d35400; transition: 0.1s;
+            width: 200px; height: 200px; border-radius: 50%; border: none;
+            background: #e67e22; color: white; font-size: 24px;
+            cursor: pointer; margin-top: 20px;
+            box-shadow: 0 10px #d35400;
         }
-        #click_btn:active { box-shadow: 0 4px #d35400; transform: translateY(6px); }
     </style>
 </head>
 <body>
@@ -27,37 +26,39 @@
     <button id="click_btn">КЛИК!</button>
 
     <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-
-        let count = 0;
-        const scoreDisplay = document.getElementById('score');
-        const btn = document.getElementById('click_btn');
-
-        // Проверка: нашелся ли элемент в HTML?
-        if (!btn) {
-            alert("Ошибка: Кнопка с id='click_btn' не найдена!");
-        }
-
-        tg.MainButton.setParams({
-            text: "ЗАБРАТЬ ОЧКИ",
-            color: "#2ecc71"
-        });
-
-        btn.addEventListener('click', () => {
-            count++;
-            scoreDisplay.innerText = count; // Обновляем цифру на экране
+        // Проверка загрузки скрипта
+        window.onload = function() {
+            let tg = window.Telegram.WebApp;
+            tg.expand();
             
-            tg.HapticFeedback.impactOccurred('medium'); // Вибрация
+            let count = 0;
+            const scoreDisplay = document.getElementById('score');
+            const btn = document.getElementById('click_btn');
 
-            if (count >= 5) { 
-                tg.MainButton.show();
+            if (!btn) {
+                alert("Кнопка не найдена! Проверь ID в HTML");
+                return;
             }
-        });
 
-        tg.MainButton.onClick(() => {
-            tg.sendData(count.toString());
-        });
+            btn.addEventListener('click', function() {
+                count++;
+                scoreDisplay.innerText = count;
+                
+                // Легкая вибрация
+                if (tg.HapticFeedback) {
+                    tg.HapticFeedback.impactOccurred('medium');
+                }
+
+                if (count >= 5) {
+                    tg.MainButton.text = "ЗАБРАТЬ ОЧКИ";
+                    tg.MainButton.show();
+                }
+            });
+
+            tg.MainButton.onClick(function() {
+                tg.sendData(count.toString());
+            });
+        };
     </script>
 </body>
 </html>
