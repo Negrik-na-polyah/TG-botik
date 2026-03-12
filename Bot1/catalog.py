@@ -10,19 +10,23 @@ def register(bot):
         markup = telebot.types.InlineKeyboardMarkup()
 
         markup.add(
-            telebot.types.InlineKeyboardButton("♈ Знаки зодиака",callback_data="category:zodiac")
+            telebot.types.InlineKeyboardButton("♈ Знаки зодиака", callback_data="category:zodiac")
         )
 
         markup.add(
-            telebot.types.InlineKeyboardButton("🧸 Мишки",callback_data="category:bears")
+            telebot.types.InlineKeyboardButton("🧸 Мишки", callback_data="category:bears")
         )
 
         markup.add(
-            telebot.types.InlineKeyboardButton("🦆 Уточки",callback_data="category:ducks")
+            telebot.types.InlineKeyboardButton("🦆 Уточки", callback_data="category:ducks")
         )
 
         markup.add(
-            telebot.types.InlineKeyboardButton("🎨 Кастомная игрушка",callback_data="category:custom")
+            telebot.types.InlineKeyboardButton("🎨 Кастомная игрушка", callback_data="category:custom")
+        )
+
+        markup.add(
+            telebot.types.InlineKeyboardButton("⬅ Назад", callback_data="back_to_main")
         )
 
         bot.edit_message_text(
@@ -32,8 +36,7 @@ def register(bot):
             reply_markup=markup
         )
 
-
-    @bot.callback_query_handler(func=lambda call: call.data.startswith("category"))
+    @bot.callback_query_handler(func=lambda call: call.data.startswith("category:"))
     def show_products(call):
 
         category = call.data.split(":")[1]
@@ -42,11 +45,12 @@ def register(bot):
         cursor = conn.cursor()
 
         cursor.execute(
-            "SELECT id,name FROM products WHERE category=?",
+            "SELECT id, name FROM products WHERE category=?",
             (category,)
         )
 
         products = cursor.fetchall()
+        conn.close()
 
         markup = telebot.types.InlineKeyboardMarkup()
 
@@ -66,14 +70,13 @@ def register(bot):
         )
 
         bot.edit_message_text(
-            "Товары:",
+            "Товары:" if products else "😔 В этой категории пока нет товаров",
             call.message.chat.id,
             call.message.message_id,
             reply_markup=markup
         )
 
-
-    @bot.callback_query_handler(func=lambda call: call.data.startswith("product"))
+    @bot.callback_query_handler(func=lambda call: call.data.startswith("product:"))
     def product_page(call):
 
         product_id = call.data.split(":")[1]
@@ -82,19 +85,24 @@ def register(bot):
         cursor = conn.cursor()
 
         cursor.execute(
-            "SELECT name,description,price,photo,category FROM products WHERE id=?",
+            "SELECT name, description, price, photo, category FROM products WHERE id=?",
             (product_id,)
         )
 
-        name,description,price,photo,category = cursor.fetchone()
+        row = cursor.fetchone()
+        conn.close()
 
-        text=f"""
-🧸 {name}
+        if not row:
+            bot.send_message(call.message.chat.id, "❌ Товар не найден")
+            return
 
-{description}
+        name, description, price, photo, category = row
 
-💰 Цена: {price} руб
-"""
+        text = (
+            f"🧸 *{name}*\n\n"
+            f"{description}\n\n"
+            f"💰 Цена: {price} руб"
+        )
 
         markup = telebot.types.InlineKeyboardMarkup()
 
@@ -116,5 +124,6 @@ def register(bot):
             call.message.chat.id,
             photo,
             caption=text,
-            reply_markup=markup
+            reply_markup=markup,
+            parse_mode="Markdown"
         )

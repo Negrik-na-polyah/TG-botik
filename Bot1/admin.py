@@ -1,7 +1,10 @@
+import logging
+
 import telebot
 from config import ADMIN_IDS
 from database import get_connection
 
+logger = logging.getLogger(__name__)
 
 # состояния админа
 admin_states = {}
@@ -9,10 +12,10 @@ admin_states = {}
 
 def is_admin(user_id):
     if user_id in ADMIN_IDS:
-        print(f"✅ Админ {user_id} использует панель")
+        logger.info("✅ Админ %s использует панель", user_id)
         return True
 
-    print(f"❌ Пользователь {user_id} попытался открыть админку")
+    logger.warning("❌ Пользователь %s попытался открыть админку", user_id)
     return False
 
 
@@ -144,7 +147,7 @@ def register(bot):
 
             try:
                 state["price"] = int(message.text)
-            except:
+            except Exception:
                 bot.send_message(message.chat.id, "Цена должна быть числом")
                 return
 
@@ -166,7 +169,7 @@ def register(bot):
             INSERT INTO products
             (name,description,price,category,photo)
             VALUES (?,?,?,?,?)
-            """,(
+            """, (
                 state["name"],
                 state["description"],
                 state["price"],
@@ -254,9 +257,11 @@ def register(bot):
         cursor = conn.cursor()
 
         cursor.execute("""
-        SELECT orders.id, products.name, orders.quantity, orders.price
+        SELECT orders.id, products.name, orders.quantity, orders.price,
+               orders.name, orders.phone, orders.address, orders.created_at
         FROM orders
         JOIN products ON products.id = orders.product_id
+        ORDER BY orders.id DESC
         """)
 
         orders = cursor.fetchall()
@@ -271,21 +276,24 @@ def register(bot):
             )
             return
 
-        text = "📦 Список заказов\n\n"
+        text = "📦 *Список заказов*\n\n"
 
         for order in orders:
 
-            text += f"""
-№{order[0]}
-Товар: {order[1]}
-Количество: {order[2]}
-Сумма: {order[3]} руб
-
-"""
+            text += (
+                f"*№{order[0]}* | {order[7][:10]}\n"
+                f"Товар: {order[1]}\n"
+                f"Кол-во: {order[2]} шт. | Сумма: {order[3]} руб\n"
+                f"Клиент: {order[4]}\n"
+                f"Тел: {order[5]}\n"
+                f"Адрес: {order[6]}\n"
+                f"{'─' * 28}\n"
+            )
 
         bot.send_message(
             call.message.chat.id,
-            text
+            text,
+            parse_mode="Markdown"
         )
 
     # -----------------------
@@ -303,14 +311,31 @@ def register(bot):
         cursor.execute("SELECT SUM(price) FROM orders")
         revenue = cursor.fetchone()[0]
 
+        cursor.execute("SELECT COUNT(*) FROM products")
+        total_products = cursor.fetchone()[0]
+
+        cursor.execute("""
+        SELECT products.name, SUM(orders.quantity) as cnt
+        FROM orders
+        JOIN products ON products.id = orders.product_id
+        GROUP BY products.name
+        ORDER BY cnt DESC
+        LIMIT 3
+        """)
+        top = cursor.fetchall()
+
         conn.close()
+
+        top_text = ""
+        for i, item in enumerate(top, 1):
+            top_text += f"  {i}. {item[0]} — {item[1]} шт.\n"
 
         bot.send_message(
             call.message.chat.id,
-            f"""
-📊 Статистика
-
-Всего заказов: {total_orders}
-Выручка: {revenue if revenue else 0} руб
-"""
+            f"📊 *Статистика магазина*\n\n"
+            f"📦 Всего заказов: {total_orders}\n"
+            f"💰 Выручка: {revenue if revenue else 0} руб\n"
+            f"🧸 Товаров в каталоге: {total_products}\n\n"
+            f"🏆 Топ товаров:\n{top_text if top_text else '  Нет данных'}",
+            parse_mode="Markdown"
         )
