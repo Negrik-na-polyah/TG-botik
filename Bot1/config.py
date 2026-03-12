@@ -1,0 +1,12 @@
+import os
+
+BOT_TOKEN = os.getenv("BOT_TOKEN", "8587792984:AAEg58T5BuLl-aQbwIUH8n8Hq4U1V7hO6g8")
+
+ADMIN_IDS = [6001888874]
+
+PAYMENT_PROVIDER_TOKEN = os.getenv(
+    "PAYMENT_PROVIDER_TOKEN",
+    "TEST:TOKEN"
+)
+
+DB_NAME = "shop.db"
